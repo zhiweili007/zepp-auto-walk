@@ -1,0 +1,28 @@
+name: ZeppLife 自动刷步
+
+on:
+  workflow_dispatch:  # 支持手动运行
+  schedule:           # 每日定时运行（北京时间 9:30）
+    - cron: '30 1 * * *'  # UTC时间：1:30 → 北京时间 9:30
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v3
+
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: 安装依赖（如果有 requirements.txt）
+        run: |
+          pip install -r requirements.txt || echo "无依赖，跳过安装"
+
+      - name: 运行主脚本
+        env:
+          CONFIG: ${{ secrets.CONFIG }}
+        run: |
+          python main.py
